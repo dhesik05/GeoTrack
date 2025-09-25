@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCT Geo-Attend - Complete System</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            margin: 50px auto;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .logo::before {
+            content: 'GCT';
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin: 0;
+        }
+
+        .college-name {
+            color: #2a5298;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .app-subtitle {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0 0 0;
+        }
+
+        .college-info {
+            background: linear-gradient(135deg, #f8f9ff, #e8f0ff);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-option {
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .role-option:hover {
+            border-color: #2a5298;
+            background: #f8f9ff;
+        }
+
+        .role-option.selected {
+            border-color: #2a5298;
+            background: #2a5298;
+            color: white;
+        }
+
+        .role-option .role-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .role-option .role-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1000px;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .welcome-section h2 {
+            color: #1e3c72;
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .user-info {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #2a5298;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .department-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #1e3c72;
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9ff, #e8f0ff);
+            border-radius: 15px;
+            border: 1px solid #e1e5e9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(42, 82, 152, 0.15);
+        }
+
+        .feature-card .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+
+        .feature-card .feature-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .location-status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .location-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .location-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .location-checking {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .class-details {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2a5298;
+        }
+
+        .mark-attendance-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .mark-attendance-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .mark-attendance-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        /* Report Styles */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .report-table th {
+            background: #f8f9ff;
+            color: #1e3c72;
+            font-weight: 600;
+        }
+
+        .status-present {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #2a5298;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .schedule-item {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .schedule-time {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .schedule-subject {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .schedule-faculty {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .role-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div class="login-container" id="loginForm">
+            <div class="logo-section">
+                <div class="logo"></div>
+                <h1 class="app-title">GCT Geo-Attend</h1>
+                <p class="college-name">Gnanamani College of Technology</p>
+                <p class="app-subtitle">Complete Attendance Management System</p>
+            </div>
+
+            <div class="college-info">
+                <div style="font-size: 12px; color: #1e3c72; font-weight: 500;">🏛️ Autonomous Engineering Institution</div>
+                <div style="font-size: 12px; color: #1e3c72; font-weight: 500;">📍 Namakkal, Tamil Nadu</div>
+            </div>
+
+            <form id="loginFormElement">
+                <div class="form-group">
+                    <label>Select Your Role</label>
+                    <div class="role-selector">
+                        <div class="role-option" data-role="student">
+                            <div class="role-icon">🎓</div>
+                            <div class="role-name">Student</div>
+                        </div>
+                        <div class="role-option" data-role="faculty">
+                            <div class="role-icon">👨‍🏫</div>
+                            <div class="role-name">Faculty</div>
+                        </div>
+                        <div class="role-option" data-role="hod">
+                            <div class="role-icon">👔</div>
+                            <div class="role-name">HOD</div>
+                        </div>
+                        <div class="role-option" data-role="admin">
+                            <div class="role-icon">⚙️</div>
+                            <div class="role-name">Admin</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Student ID / Employee ID</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your ID (e.g., 23AD021)">
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn" disabled>
+                    Sign In to GCT Geo-Attend
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <div class="dashboard-header">
+                <div class="welcome-section">
+                    <h2 id="welcomeMessage">Welcome to GCT!</h2>
+                    <div class="user-info">
+                        <div class="role-badge" id="roleBadge"></div>
+                        <div class="department-badge" id="departmentBadge"></div>
+                        <div style="margin-top: 10px; font-size: 14px; color: #666;" id="userDetails"></div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            
+            <div class="feature-grid" id="featureGrid">
+                <!-- Features will be populated based on role -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Modal -->
+    <div id="attendanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('attendanceModal')">&times;</span>
+            <h2 style="color: #1e3c72; margin-bottom: 20px;">📍 Mark Attendance</h2>
+            
+            <div class="class-details">
+                <h3 style="margin: 0 0 10px 0; color: #2a5298;">Current Class</h3>
+                <div id="classInfo">
+                    <strong>Subject:</strong> Machine Learning<br>
+                    <strong>Faculty:</strong> Dr. Priya Sharma<br>
+                    <strong>Time:</strong> 10:00 AM - 11:00 AM<br>
+                    <strong>Venue:</strong> AI Lab - Block C
+                </div>
+            </div>
+
+            <div id="locationStatus" class="location-status location-checking">
+                🔍 Checking your location...
+            </div>
+
+            <button id="markAttendanceBtn" class="mark-attendance-btn" disabled onclick="markAttendance()">
+                Mark My Attendance
+            </button>
+        </div>
+    </div>
+
+    <!-- Attendance Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('reportModal')">&times;</span>
+            <h2 style="color: #1e3c72; margin-bottom: 20px;">📊 Attendance Report</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalClasses">45</div>
+                    <div class="stat-label">Total Classes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="attendedClasses">41</div>
+                    <div class="stat-label">Attended</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="attendancePercentage">91.1%</div>
+                    <div class="stat-label">Attendance</div>
+                </div>
+            </div>
+
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceRecords">
+                    <!-- Records will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('scheduleModal')">&times;</span>
+            <h2 style="color: #1e3c72; margin-bottom: 20px;">📅 Today's Schedule</h2>
+            
+            <div id="scheduleList">
+                <!-- Schedule items will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('notificationsModal')">&times;</span>
+            <h2 style="color: #1e3c72; margin-bottom: 20px;">🔔 Notifications</h2>
+            
+            <div id="notificationsList">
+                <!-- Notifications will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Faculty Session Modal -->
+    <div id="sessionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sessionModal')">&times;</span>
+            <h2 style="color: #1e3c72; margin-bottom: 20px;">▶️ Start Attendance Session</h2>
+            
+            <div class="form-group">
+                <label>Select Subject</label>
+                <select id="sessionSubject">
+                    <option>Machine Learning</option>
+                    <option>Data Structures</option>
+                    <option>Database Management</option>
+                    <option>Computer Networks</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Session Duration (minutes)</label>
+                <select id="sessionDuration">
+                    <option value="60">60 minutes</option>
+                    <option value="90">90 minutes</option>
+                    <option value="120">120 minutes</option>
+                </select>
+            </div>
+
+            <button class="mark-attendance-btn" onclick="startSession()">
+                Start Session
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = '';
+        let currentUser = null;
+        let attendanceRecords = [];
+        let activeSession = null;
+        
+        // GCT Campus coordinates
+        const GCT_LOCATION = {
+            lat: 11.2515,
+            lng: 78.9280
+        };
+        
+        // Sample data
+        const studentData = {
+            '23AD021': {
+                name: 'Dhesik V',
+                department: 'AI & DS',
+                year: 'II',
+                semester: 'III',
+                attendance: '91.1%'
+            },
+            '23AD037': {
+                name: 'Jayendhraa',
+                department: 'AI & DS', 
+                year: 'II',
+                semester: 'III',
+                attendance: '89.2%'
+            }
+        };
+
+        const facultyData = {
+            'FAC001': { name: 'Dr. Priya Sharma', department: 'AI & DS', designation: 'Professor' },
+            'FAC002': { name: 'Dr. Rajesh Kumar', department: 'AI & DS', designation: 'Associate Professor' }
+        };
+
+        const scheduleData = [
+            { time: '09:00 - 10:00', subject: 'Data Structures', faculty: 'Dr. Rajesh Kumar', venue: 'Lab 1' },
+            { time: '10:00 - 11:00', subject: 'Machine Learning', faculty: 'Dr. Priya Sharma', venue: 'AI Lab' },
+            { time: '11:15 - 12:15', subject: 'Database Management', faculty: 'Dr. Suresh Babu', venue: 'Lab 2' },
+            { time: '14:00 - 15:00', subject: 'Computer Networks', faculty: 'Dr. Meera Devi', venue: 'Theory Hall' }
+        ];
+
+        // Initialize attendance records
+        function initializeAttendanceRecords() {
+            const subjects = ['Machine Learning', 'Data Structures', 'Database Management', 'Computer Networks'];
+            const statuses = ['Present', 'Present', 'Absent', 'Present', 'Present'];
+            
+            for (let i = 0; i < 10; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                
+                attendanceRecords.push({
+                    date: date.toLocaleDateString(),
+                    subject: subjects[i % subjects.length],
+                    time: '10:00 AM',
+                    status: statuses[i % statuses.length]
+                });
+            }
+        }
+
+        // Role selection functionality
+        document.querySelectorAll('.role-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedRole = this.dataset.role;
+                updateLoginButton();
+            });
+        });
+
+        function updateLoginButton() {
+            const loginBtn = document.getElementById('loginBtn');
+            const username = document.getElementById('username').value;
+            
+            loginBtn.disabled = !(selectedRole && username);
+        }
+
+        document.getElementById('username').addEventListener('input', updateLoginButton);
+
+        // Login form submission
+        document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            
+            if (selectedRole === 'student' && !studentData[username]) {
+                alert('Invalid Student ID. Please use 23AD021 or 23AD037');
+                return;
+            }
+            
+            if (username && selectedRole) {
+                currentUser = {
+                    id: username,
+                    role: selectedRole,
+                    data: studentData[username] || facultyData[username] || {}
+                };
+                showDashboard(selectedRole, username);
+                initializeAttendanceRecords();
+            }
+        });
+
+        function showDashboard(role, username) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            
+            const roleBadge = document.getElementById('roleBadge');
+            const departmentBadge = document.getElementById('departmentBadge');
+            const userDetails = document.getElementById('userDetails');
+            const featureGrid = document.getElementById('featureGrid');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            
+            const roleNames = {
+                student: 'Student',
+                faculty: 'Faculty Member',
+                hod: 'Head of Department',
+                admin: 'Administrator'
+            };
+            
+            roleBadge.textContent = roleNames[role];
+            welcomeMessage.textContent = `Welcome to GCT, ${currentUser.data.name || username}!`;
+            
+            if (role === 'student' && studentData[username]) {
+                const student = studentData[username];
+                departmentBadge.textContent = `AI & Data Science`;
+                userDetails.innerHTML = `${student.name} | ID: ${username}<br>Year: ${student.year} | Semester: ${student.semester} | Attendance: ${student.attendance}`;
+            } else {
+                departmentBadge.textContent = 'AI & Data Science Department';
+                userDetails.innerHTML = `Employee ID: ${username}<br>Department: AI & DS`;
+            }
+            
+            const features = {
+                student: [
+                    { icon: '📍', title: 'Mark Attendance', desc: 'Check in to current class', action: 'attendance' },
+                    { icon: '📊', title: 'Attendance Report', desc: 'View detailed records', action: 'report' },
+                    { icon: '📅', title: 'Class Schedule', desc: 'Today\'s timetable', action: 'schedule' },
+                    { icon: '🔔', title: 'Notifications', desc: 'Important alerts', action: 'notifications' }
+                ],
+                faculty: [
+                    { icon: '▶️', title: 'Start Session', desc: 'Begin attendance tracking', action: 'session' },
+                    { icon: '👥', title: 'Live Dashboard', desc: 'Monitor student check-ins', action: 'dashboard' },
+                    { icon: '✏️', title: 'Manual Entry', desc: 'Mark attendance manually', action: 'manual' },
+                    { icon: '📋', title: 'Class Reports', desc: 'Generate detailed reports', action: 'reports' }
+                ],
+                hod: [
+                    { icon: '📈', title: 'Department Analytics', desc: 'AI & DS performance insights', action: 'analytics' },
+                    { icon: '📄', title: 'Monthly Reports', desc: 'Comprehensive statistics', action: 'monthlyReports' },
+                    { icon: '👀', title: 'Faculty Monitor', desc: 'Track teaching sessions', action: 'monitor' },
+                    { icon: '🎯', title: 'Compliance Check', desc: 'Attendance compliance rates', action: 'compliance' }
+                ],
+                admin: [
+                    { icon: '👤', title: 'User Management', desc: 'Manage student & faculty accounts', action: 'users' },
+                    { icon: '🏫', title: 'System Settings', desc: 'Configure GCT parameters', action: 'settings' },
+                    { icon: '📊', title: 'Institution Reports', desc: 'College-wide analytics', action: 'institutionReports' },
+                    { icon: '🔧', title: 'System Health', desc: 'Monitor system performance', action: 'health' }
+                ]
+            };
+            
+            featureGrid.innerHTML = features[role].map(feature => `
+                <div class="feature-card" onclick="handleFeatureClick('${feature.action}', '${feature.title}')">
+                    <div class="feature-icon">${feature.icon}</div>
+                    <div class="feature-title">${feature.title}</div>
+                    <div class="feature-desc">${feature.desc}</div>
+                </div>
+            `).join('');
+        }
+
+        function handleFeatureClick(action, featureName) {
+            switch(action) {
+                case 'attendance':
+                    openModal('attendanceModal');
+                    checkLocation();
+                    break;
+                case 'report':
+                    openModal('reportModal');
+                    populateAttendanceReport();
+                    break;
+                case 'schedule':
+                    openModal('scheduleModal');
+                    populateSchedule();
+                    break;
+                case 'notifications':
+                    openModal('notificationsModal');
+                    populateNotifications();
+                    break;
+                case 'session':
+                    openModal('sessionModal');
+                    break;
+                case 'dashboard':
+                    showLiveDashboard();
+                    break;
+                case 'manual':
+                    showManualEntry();
+                    break;
+                case 'reports':
+                    showClassReports();
+                    break;
+                case 'analytics':
+                    showDepartmentAnalytics();
+                    break;
+                case 'monthlyReports':
+                    showMonthlyReports();
+                    break;
+                case 'monitor':
+                    showFacultyMonitor();
+                    break;
+                case 'compliance':
+                    showComplianceCheck();
+                    break;
+                case 'users':
+                    showUserManagement();
+                    break;
+                case 'settings':
+                    showSystemSettings();
+                    break;
+                case 'institutionReports':
+                    showInstitutionReports();
+                    break;
+                case 'health':
+                    showSystemHealth();
+                    break;
+                default:
+                    alert(`${featureName} feature is fully functional in the complete GCT Geo-Attend system!`);
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function checkLocation() {
+            const locationStatus = document.getElementById('locationStatus');
+            const markBtn = document.getElementById('markAttendanceBtn');
+            
+            if (!navigator.geolocation) {
+                locationStatus.className = 'location-status location-error';
+                locationStatus.innerHTML = '❌ Geolocation is not supported by this browser';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    
+                    const distance = calculateDistance(userLat, userLng, GCT_LOCATION.lat, GCT_LOCATION.lng);
+                    
+                    if (distance <= 0.2) { // 200 meters radius
+                        locationStatus.className = 'location-status location-success';
+                        locationStatus.innerHTML = `✅ Location Verified: You are within the GCT Campus.<br>Distance: ${Math.round(distance * 1000)}m from center`;
+                        markBtn.disabled = false;
+                    } else {
+                        locationStatus.className = 'location-status location-error';
+                        locationStatus.innerHTML = `❌ Location Error: You are outside the GCT Campus.<br>Distance: ${Math.round(distance * 1000)}m from center`;
+                        markBtn.disabled = true;
+                    }
+                },
+                function(error) {
+                    locationStatus.className = 'location-status location-error';
+                    locationStatus.innerHTML = '❌ Unable to get your location. Please enable location services.';
+                    markBtn.disabled = true;
+                }
+            );
+        }
+
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function markAttendance() {
+            const markBtn = document.getElementById('markAttendanceBtn');
+            markBtn.innerHTML = 'Marking Attendance...';
+            markBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Add new attendance record
+                attendanceRecords.unshift({
+                    date: new Date().toLocaleDateString(),
+                    subject: 'Machine Learning',
+                    time: new Date().toLocaleTimeString(),
+                    status: 'Present'
+                });
+                
+                alert('✅ Attendance marked successfully!\n\nSubject: Machine Learning\nTime: ' + new Date().toLocaleTimeString() + '\nStatus: Present');
+                closeModal('attendanceModal');
+                markBtn.innerHTML = 'Mark My Attendance';
+            }, 2000);
+        }
+
+        function populateAttendanceReport() {
+            const recordsTable = document.getElementById('attendanceRecords');
+            recordsTable.innerHTML = attendanceRecords.map(record => `
+                <tr>
+                    <td>${record.date}</td>
+                    <td>${record.subject}</td>
+                    <td>${record.time}</td>
+                    <td class="status-${record.status.toLowerCase()}">${record.status}</td>
+                </tr>
+            `).join('');
+            
+            // Update statistics
+            const totalClasses = attendanceRecords.length;
+            const attendedClasses = attendanceRecords.filter(r => r.status === 'Present').length;
+            const percentage = totalClasses > 0 ? ((attendedClasses / totalClasses) * 100).toFixed(1) : 0;
+            
+            document.getElementById('totalClasses').textContent = totalClasses;
+            document.getElementById('attendedClasses').textContent = attendedClasses;
+            document.getElementById('attendancePercentage').textContent = percentage + '%';
+        }
+
+        function populateSchedule() {
+            const scheduleList = document.getElementById('scheduleList');
+            scheduleList.innerHTML = scheduleData.map(item => `
+                <div class="schedule-item">
+                    <div class="schedule-time">${item.time}</div>
+                    <div class="schedule-subject">${item.subject}</div>
+                    <div class="schedule-faculty">Faculty: ${item.faculty} | Venue: ${item.venue}</div>
+                </div>
+            `).join('');
+        }
+
+        function populateNotifications() {
+            const notifications = [
+                { type: 'info', message: 'Machine Learning class moved to AI Lab - Block C', time: '2 hours ago' },
+                { type: 'warning', message: 'Attendance below 75% - Please attend regularly', time: '1 day ago' },
+                { type: 'success', message: 'Successfully marked attendance for Database Management', time: '2 days ago' },
+                { type: 'info', message: 'New assignment uploaded for Computer Networks', time: '3 days ago' }
+            ];
+            
+            const notificationsList = document.getElementById('notificationsList');
+            notificationsList.innerHTML = notifications.map(notif => `
+                <div class="schedule-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>${notif.message}</span>
+                        <small style="color: #666;">${notif.time}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startSession() {
+            const subject = document.getElementById('sessionSubject').value;
+            const duration = document.getElementById('sessionDuration').value;
+            
+            activeSession = {
+                subject: subject,
+                duration: parseInt(duration),
+                startTime: new Date(),
+                students: []
+            };
+            
+            alert(`✅ Attendance session started!\n\nSubject: ${subject}\nDuration: ${duration} minutes\n\nStudents can now mark their attendance.`);
+            closeModal('sessionModal');
+        }
+
+        // Faculty and Admin functions
+        function showLiveDashboard() {
+            alert('📊 Live Dashboard\n\nReal-time attendance monitoring:\n• 23 students checked in\n• 2 pending check-ins\n• Session: Machine Learning\n• Started: 10:00 AM');
+        }
+
+        function showManualEntry() {
+            alert('✏️ Manual Entry\n\nManually mark attendance for:\n• Absent students\n• Technical issues\n• Late arrivals\n\nSelect students and mark status.');
+        }
+
+        function showClassReports() {
+            alert('📋 Class Reports\n\nGenerate reports for:\n• Daily attendance\n• Subject-wise analysis\n• Student performance\n• Export to Excel/PDF');
+        }
+
+        function showDepartmentAnalytics() {
+            alert('📈 Department Analytics\n\nAI & DS Department Insights:\n• Overall attendance: 87.5%\n• Top performing class: II Year\n• Subjects needing attention: 2\n• Faculty performance metrics');
+        }
+
+        function showMonthlyReports() {
+            alert('📄 Monthly Reports\n\nComprehensive monthly statistics:\n• Department-wise breakdown\n• Trend analysis\n• Compliance metrics\n• Automated report generation');
+        }
+
+        function showFacultyMonitor() {
+            alert('👀 Faculty Monitor\n\nTrack teaching sessions:\n• Active sessions: 3\n• Completed today: 8\n• Faculty attendance: 95%\n• Session quality metrics');
+        }
+
+        function showComplianceCheck() {
+            alert('🎯 Compliance Check\n\nAttendance compliance rates:\n• Students above 75%: 89%\n• At-risk students: 12\n• Department average: 87.5%\n• Improvement suggestions');
+        }
+
+        function showUserManagement() {
+            alert('👤 User Management\n\nManage accounts:\n• Total students: 240\n• Active faculty: 15\n• Pending registrations: 5\n• Role assignments & permissions');
+        }
+
+        function showSystemSettings() {
+            alert('🏫 System Settings\n\nConfigure GCT parameters:\n• Campus locations\n• Attendance thresholds\n• Notification settings\n• Academic calendar setup');
+        }
+
+        function showInstitutionReports() {
+            alert('📊 Institution Reports\n\nCollege-wide analytics:\n• Total attendance: 86.2%\n• Department comparison\n• Semester trends\n• Executive dashboards');
+        }
+
+        function showSystemHealth() {
+            alert('🔧 System Health\n\nMonitor system performance:\n• Server uptime: 99.9%\n• Database status: Healthy\n• API response time: 120ms\n• Active users: 1,247');
+        }
+
+        function logout() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').classList.remove('active');
+            
+            document.getElementById('loginFormElement').reset();
+            document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
+            selectedRole = '';
+            currentUser = null;
+            attendanceRecords = [];
+            updateLoginButton();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
